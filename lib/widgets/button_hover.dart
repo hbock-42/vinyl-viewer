@@ -3,8 +3,9 @@ import 'package:vinyl_viewer/theme/main_theme.dart';
 
 class ButtonHover extends StatefulWidget {
   final void Function() onClick;
+  final String text;
 
-  const ButtonHover({Key key, this.onClick}) : super(key: key);
+  const ButtonHover(this.text, {Key key, this.onClick}) : super(key: key);
 
   @override
   _ButtonHoverState createState() => _ButtonHoverState();
@@ -31,7 +32,7 @@ class _ButtonHoverState extends State<ButtonHover> {
               vertical: 10,
             ),
             child: Text(
-              'get file',
+              widget.text,
               style: AppTheme.whiteText.button,
             ),
           ),
