@@ -16,24 +16,29 @@ class _ButtonHoverState extends State<ButtonHover> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isHovered ? Color.fromRGBO(0, 137, 184, 1) : Colors.blue,
-        borderRadius: AppTheme.borderRadius,
-      ),
-      child: Listener(
-        onPointerUp: (event) => widget.onClick(),
-        child: MouseRegion(
-          onEnter: (event) => setState(() => isHovered = true),
-          onExit: (event) => setState(() => isHovered = false),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 30,
-              vertical: 10,
-            ),
-            child: Text(
-              widget.text,
-              style: AppTheme.whiteText.button,
+    return Listener(
+      onPointerUp: (event) => {widget.onClick(), print("clicked")},
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minWidth: 200, minHeight: 65),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isHovered ? Color.fromRGBO(0, 137, 184, 1) : Colors.blue,
+            borderRadius: AppTheme.borderRadius,
+          ),
+          child: MouseRegion(
+            onEnter: (event) => setState(() => isHovered = true),
+            onExit: (event) => setState(() => isHovered = false),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 30,
+                vertical: 10,
+              ),
+              child: Center(
+                child: Text(
+                  widget.text,
+                  style: AppTheme.whiteText.button,
+                ),
+              ),
             ),
           ),
         ),
