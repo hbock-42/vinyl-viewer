@@ -17,7 +17,7 @@ class _ButtonHoverState extends State<ButtonHover> {
   @override
   Widget build(BuildContext context) {
     return Listener(
-      onPointerUp: (event) => {widget.onClick(), print("clicked")},
+      onPointerUp: (event) => widget.onClick(),
       child: ConstrainedBox(
         constraints: BoxConstraints(minWidth: 200, minHeight: 65),
         child: Container(

@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vinyl_viewer/helpers/image_main_color.dart';
 import 'package:vinyl_viewer/widgets/button_hover.dart';
+import 'package:vinyl_viewer/widgets/color_picker.dart';
 import 'package:vinyl_viewer/widgets/rotating_macaron.dart';
 
 class HomePage extends StatelessWidget {
@@ -14,11 +16,17 @@ class HomePage extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AFile()),
         ChangeNotifierProvider(create: (_) => PlayStateController()),
         ChangeNotifierProvider(create: (_) => Rpm()),
+        ChangeNotifierProvider(create: (_) => BgColor()),
       ],
-      child: Consumer3<AFile, PlayStateController, Rpm>(
-        builder: (BuildContext context, AFile file,
-            PlayStateController playStateController, Rpm rpm, Widget child) {
+      child: Consumer4<AFile, PlayStateController, Rpm, BgColor>(
+        builder: (BuildContext context,
+            AFile file,
+            PlayStateController playStateController,
+            Rpm rpm,
+            BgColor bgColor,
+            Widget child) {
           return Container(
+            color: bgColor.color,
             child: IntrinsicHeight(
               child: Column(
                 children: <Widget>[
@@ -27,7 +35,7 @@ class HomePage extends StatelessWidget {
                     children: <Widget>[
                       ButtonHover(
                         'get file',
-                        onClick: () => loadImage(file),
+                        onClick: () => loadImage(file, bgColor),
                       ),
                       SizedBox(width: 15),
                       ButtonHover(
@@ -76,9 +84,13 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  loadImage(AFile file) async {
+  loadImage(AFile file, BgColor bgColor) async {
     File localFile = await FilePicker.getFile(type: FileType.image);
     file.setFile(localFile);
+    if (localFile != null) {
+      var color = mainColorFromBytes(await file.file.readAsBytes());
+      bgColor.setColor(color);
+    }
   }
 
   setPlayState(PlayStateController playController) {
@@ -118,6 +130,15 @@ class Rpm with ChangeNotifier {
   int get rpm => _currentRpm;
   void setRpm(int rpm) {
     _currentRpm = rpm;
+    notifyListeners();
+  }
+}
+
+class BgColor with ChangeNotifier {
+  Color _color = Colors.red;
+  Color get color => _color;
+  void setColor(Color color) {
+    _color = color;
     notifyListeners();
   }
 }
