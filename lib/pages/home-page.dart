@@ -4,11 +4,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vinyl_viewer/helpers/image_main_color.dart';
+import 'package:vinyl_viewer/helpers/save_widget_as_png.dart';
 import 'package:vinyl_viewer/widgets/button_hover.dart';
-import 'package:vinyl_viewer/widgets/color_picker.dart';
 import 'package:vinyl_viewer/widgets/rotating_macaron.dart';
 
 class HomePage extends StatelessWidget {
+  final GlobalKey _appKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -63,15 +64,22 @@ class HomePage extends StatelessWidget {
                         '90',
                         onClick: () => rpm.setRpm(90),
                       ),
+                      SizedBox(width: 15),
+                      ButtonHover(
+                        'save',
+                        onClick: () => capturePng(_appKey),
+                      ),
                     ],
                   ),
                   if (file.file != null)
                     Expanded(
                       child: AspectRatio(
                         aspectRatio: 1,
-                        child: RotatingMacaron(
-                          file: file.file,
-                          // rpm: rpm.rpm,
+                        child: RepaintBoundary(
+                          key: _appKey,
+                          child: RotatingMacaron(
+                            file: file.file,
+                          ),
                         ),
                       ),
                     ),

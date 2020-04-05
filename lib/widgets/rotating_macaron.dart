@@ -24,7 +24,7 @@ class _RotatingMacaronState extends State<RotatingMacaron>
   void initState() {
     _controller = AnimationController(
         vsync: this,
-        duration: Duration(microseconds: (60 / _currentRpm * 1000).round()));
+        duration: Duration(milliseconds: (60 / _currentRpm * 1000).round()));
     _controller.repeat();
     super.initState();
   }
