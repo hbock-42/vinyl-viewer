@@ -4,12 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vinyl_viewer/helpers/image_main_color.dart';
-import 'package:vinyl_viewer/helpers/save_widget_as_png.dart';
 import 'package:vinyl_viewer/widgets/button_hover.dart';
 import 'package:vinyl_viewer/widgets/rotating_macaron.dart';
 
 class HomePage extends StatelessWidget {
-  final GlobalKey _appKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -18,13 +16,18 @@ class HomePage extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PlayStateController()),
         ChangeNotifierProvider(create: (_) => Rpm()),
         ChangeNotifierProvider(create: (_) => BgColor()),
+        ChangeNotifierProvider(create: (_) => RecordNotifier()),
+        ChangeNotifierProvider(create: (_) => TakePictureNotifier()),
       ],
-      child: Consumer4<AFile, PlayStateController, Rpm, BgColor>(
+      child: Consumer6<AFile, PlayStateController, Rpm, BgColor, RecordNotifier,
+          TakePictureNotifier>(
         builder: (BuildContext context,
             AFile file,
             PlayStateController playStateController,
             Rpm rpm,
             BgColor bgColor,
+            RecordNotifier recordNotifier,
+            TakePictureNotifier takePictureNotifier,
             Widget child) {
           return Container(
             color: bgColor.color,
@@ -46,10 +49,6 @@ class HomePage extends StatelessWidget {
                         onClick: () => setPlayState(playStateController),
                       ),
                       SizedBox(width: 15),
-                      // ButtonHover(
-                      //   rpm.rpm == 45 ? '45 -> 33' : '33 -> 45',
-                      //   onClick: () => rpm.setRpm(rpm.rpm == 45 ? 33 : 45),
-                      // ),
                       ButtonHover(
                         '33',
                         onClick: () => rpm.setRpm(33),
@@ -65,10 +64,23 @@ class HomePage extends StatelessWidget {
                         onClick: () => rpm.setRpm(90),
                       ),
                       SizedBox(width: 15),
-                      ButtonHover(
-                        'save',
-                        onClick: () => capturePng(_appKey),
-                      ),
+                      if (file.file != null)
+                        ButtonHover(
+                          recordNotifier.recordState == RecordState.Start
+                              ? 'stop record'
+                              : 'start record',
+                          onClick: () => recordNotifier.setRecordState(
+                            recordNotifier.recordState == RecordState.Start
+                                ? RecordState.Stop
+                                : RecordState.Start,
+                          ),
+                        ),
+                      SizedBox(width: 15),
+                      if (file.file != null)
+                        ButtonHover(
+                          "Take snapshot",
+                          onClick: () => takePictureNotifier.takePicture(),
+                        ),
                     ],
                   ),
                   if (file.file != null)
@@ -76,7 +88,6 @@ class HomePage extends StatelessWidget {
                       child: AspectRatio(
                         aspectRatio: 1,
                         child: RepaintBoundary(
-                          key: _appKey,
                           child: RotatingMacaron(
                             file: file.file,
                           ),
@@ -147,6 +158,29 @@ class BgColor with ChangeNotifier {
   Color get color => _color;
   void setColor(Color color) {
     _color = color;
+    notifyListeners();
+  }
+}
+
+enum RecordState {
+  Start,
+  Stop,
+}
+
+class RecordNotifier with ChangeNotifier {
+  RecordState _currentState = RecordState.Stop;
+  RecordState get recordState => _currentState;
+  void setRecordState(RecordState recordState) {
+    _currentState = recordState;
+    notifyListeners();
+  }
+}
+
+class TakePictureNotifier with ChangeNotifier {
+  int _pictureId = 0;
+  int get pictureId => _pictureId;
+  void takePicture() {
+    _pictureId++;
     notifyListeners();
   }
 }
