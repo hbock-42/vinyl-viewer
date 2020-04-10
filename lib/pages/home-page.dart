@@ -66,11 +66,15 @@ class HomePage extends StatelessWidget {
                       SizedBox(width: 15),
                       if (file.file != null)
                         ButtonHover(
-                          recordNotifier.recordState == RecordState.Start
+                          recordNotifier.recordState == RecordState.Start ||
+                                  recordNotifier.recordState ==
+                                      RecordState.Recording
                               ? 'stop record'
                               : 'start record',
                           onClick: () => recordNotifier.setRecordState(
-                            recordNotifier.recordState == RecordState.Start
+                            recordNotifier.recordState == RecordState.Start ||
+                                    recordNotifier.recordState ==
+                                        RecordState.Recording
                                 ? RecordState.Stop
                                 : RecordState.Start,
                           ),
@@ -164,6 +168,8 @@ class BgColor with ChangeNotifier {
 
 enum RecordState {
   Start,
+  Recording,
+  Converting,
   Stop,
 }
 
@@ -171,6 +177,7 @@ class RecordNotifier with ChangeNotifier {
   RecordState _currentState = RecordState.Stop;
   RecordState get recordState => _currentState;
   void setRecordState(RecordState recordState) {
+    print(recordState);
     _currentState = recordState;
     notifyListeners();
   }
